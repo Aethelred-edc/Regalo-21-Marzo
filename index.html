@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Lirios &amp; Orquídeas para MEY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400;1,500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div id="overlay">
+    <div class="ov-petals" id="ov-petals"></div>
+    <div class="ov-centro">
+      <p class="ov-fecha">21 · III · MMXXVI</p>
+      <h1 class="ov-nombre">Para<br/><em>Mey</em></h1>
+      <p class="ov-sub">Un jardín efímero en tu honor</p>
+      <button id="btn-abrir" type="button">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+          <circle cx="30" cy="30" r="28" stroke="currentColor" stroke-width="1"/>
+          <circle cx="30" cy="30" r="22" stroke="currentColor" stroke-width="0.6" opacity="0.5"/>
+          <path d="M20 30 L26 36 L40 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="btn-txt">Abrir</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="main">
+    <canvas id="part-cv"></canvas>
+
+    <!--
+      ViewBox: 0 0 400 680   (portrait mobile)
+      Origen del ramo (lazo): (200, 615)
+
+      MAPA DE COORDENADAS — tallo termina DONDE empieza la flor:
+        t4  →  fl4  HÉROE     (200, 108)   tallo recto
+        t3  →  fl3  izq-med   (148, 168)
+        t5  →  fl5  der-med   (252, 168)
+        t2  →  fl2  orq-izq   ( 88, 238)
+        t6  →  fl6  orq-der   (312, 238)
+        t1  →  fl1  ext-izq   ( 36, 335)
+        t7  →  fl7  ext-der   (364, 335)
+    -->
+    <section id="jardin">
+      <svg id="ramo"
+           viewBox="0 0 400 680"
+           xmlns="http://www.w3.org/2000/svg"
+           preserveAspectRatio="xMidYMax meet">
+        <defs>
+          <radialGradient id="gl1" cx="30%" cy="80%" r="75%">
+            <stop offset="0%"   stop-color="#FFFDE7"/>
+            <stop offset="18%"  stop-color="#FFE000"/>
+            <stop offset="45%"  stop-color="#FFB300"/>
+            <stop offset="75%"  stop-color="#FF7600"/>
+            <stop offset="100%" stop-color="#D84000"/>
+          </radialGradient>
+          <radialGradient id="gl2" cx="30%" cy="80%" r="75%">
+            <stop offset="0%"   stop-color="#FFFFF0"/>
+            <stop offset="20%"  stop-color="#FFD600"/>
+            <stop offset="50%"  stop-color="#FFAA00"/>
+            <stop offset="80%"  stop-color="#FF6500"/>
+            <stop offset="100%" stop-color="#C03000"/>
+          </radialGradient>
+          <radialGradient id="gl3" cx="30%" cy="80%" r="75%">
+            <stop offset="0%"   stop-color="#FFFDE7"/>
+            <stop offset="22%"  stop-color="#FFEB3B"/>
+            <stop offset="55%"  stop-color="#FFC107"/>
+            <stop offset="85%"  stop-color="#FF8F00"/>
+            <stop offset="100%" stop-color="#BF4000"/>
+          </radialGradient>
+          <radialGradient id="go1" cx="35%" cy="75%" r="72%">
+            <stop offset="0%"   stop-color="#FFF9C4"/>
+            <stop offset="28%"  stop-color="#FFE57F"/>
+            <stop offset="62%"  stop-color="#FFD600"/>
+            <stop offset="100%" stop-color="#F0A000"/>
+          </radialGradient>
+          <radialGradient id="go2" cx="35%" cy="75%" r="72%">
+            <stop offset="0%"   stop-color="#FFFFF0"/>
+            <stop offset="32%"  stop-color="#FFF176"/>
+            <stop offset="68%"  stop-color="#FFCA28"/>
+            <stop offset="100%" stop-color="#EAA800"/>
+          </radialGradient>
+          <radialGradient id="glab1" cx="50%" cy="30%" r="65%">
+            <stop offset="0%"   stop-color="#FFE082"/>
+            <stop offset="18%"  stop-color="#FFD600"/>
+            <stop offset="44%"  stop-color="#AB47BC"/>
+            <stop offset="74%"  stop-color="#7B1FA2"/>
+            <stop offset="100%" stop-color="#4A148C"/>
+          </radialGradient>
+          <radialGradient id="glab2" cx="50%" cy="30%" r="65%">
+            <stop offset="0%"   stop-color="#FFF176"/>
+            <stop offset="20%"  stop-color="#FFEE00"/>
+            <stop offset="46%"  stop-color="#CE93D8"/>
+            <stop offset="76%"  stop-color="#8E24AA"/>
+            <stop offset="100%" stop-color="#38006b"/>
+          </radialGradient>
+          <radialGradient id="gcl" cx="50%" cy="42%" r="58%">
+            <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.96"/>
+            <stop offset="30%"  stop-color="#FFE082"/>
+            <stop offset="65%"  stop-color="#FF8F00"/>
+            <stop offset="100%" stop-color="#D84000"/>
+          </radialGradient>
+          <radialGradient id="gco" cx="50%" cy="42%" r="58%">
+            <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.96"/>
+            <stop offset="28%"  stop-color="#FFF9C4"/>
+            <stop offset="62%"  stop-color="#FFD600"/>
+            <stop offset="100%" stop-color="#FF8F00"/>
+          </radialGradient>
+          <radialGradient id="gg-oro" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#FFD600" stop-opacity="0.52"/>
+            <stop offset="50%"  stop-color="#FF8F00" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#FF6F00" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="gg-purp" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#E040FB" stop-opacity="0.46"/>
+            <stop offset="55%"  stop-color="#9C27B0" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#7B1FA2" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="gh1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#81C784"/>
+            <stop offset="100%" stop-color="#1B5E20"/>
+          </linearGradient>
+          <linearGradient id="gh2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#66BB6A"/>
+            <stop offset="100%" stop-color="#2E7D32"/>
+          </linearGradient>
+          <linearGradient id="gt" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#2E7D32"/>
+            <stop offset="45%"  stop-color="#4CAF50"/>
+            <stop offset="100%" stop-color="#1B5E20"/>
+          </linearGradient>
+          <radialGradient id="glazo" cx="50%" cy="30%" r="60%">
+            <stop offset="0%"   stop-color="#CE93D8"/>
+            <stop offset="50%"  stop-color="#9C27B0"/>
+            <stop offset="100%" stop-color="#4A148C"/>
+          </radialGradient>
+          <filter id="fsombra" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.5)"/>
+          </filter>
+          <filter id="fglow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="fglow-lg" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="7" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="fglow-xs" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ══════════════════════════════════════════════
+             TALLOS: todos salen de (200, 615)
+             y terminan exactamente en translate() de la flor
+        ══════════════════════════════════════════════ -->
+        <g id="tallos-grupo">
+
+          <!-- t1 → fl1 (36, 335) -->
+          <path class="tallo" id="t1"
+            d="M200,615 C175,575 128,508 90,440 C66,394 50,364 36,335"
+            stroke="url(#gt)" stroke-width="2.8" fill="none" stroke-linecap="round"
+            stroke-dasharray="370" stroke-dashoffset="370"/>
+          <path class="hoja" id="h1a"
+            d="M72,400 C56,388 44,368 56,354 C68,340 84,354 80,372Z"
+            fill="url(#gh1)" opacity="0"/>
+          <path class="hoja" id="h1b"
+            d="M116,460 C132,444 150,436 156,450 C162,464 146,476 130,470Z"
+            fill="url(#gh2)" opacity="0"/>
+
+          <!-- t2 → fl2 orq izq (88, 238) -->
+          <path class="tallo" id="t2"
+            d="M200,615 C186,562 156,494 128,418 C110,364 100,304 88,238"
+            stroke="url(#gt)" stroke-width="3.0" fill="none" stroke-linecap="round"
+            stroke-dasharray="410" stroke-dashoffset="410"/>
+          <path class="hoja" id="h2a"
+            d="M106,338 C94,322 88,300 100,288 C112,276 126,292 122,310Z"
+            fill="url(#gh2)" opacity="0"/>
+
+          <!-- t3 → fl3 lirio izq (148, 168) -->
+          <path class="tallo" id="t3"
+            d="M200,615 C196,558 180,484 168,404 C160,344 156,262 148,168"
+            stroke="url(#gt)" stroke-width="3.4" fill="none" stroke-linecap="round"
+            stroke-dasharray="450" stroke-dashoffset="450"/>
+          <path class="hoja" id="h3a"
+            d="M158,360 C172,346 188,340 192,354 C196,368 180,380 166,374Z"
+            fill="url(#gh1)" opacity="0"/>
+          <path class="hoja" id="h3b"
+            d="M162,452 C148,440 140,418 152,408 C164,398 178,412 174,430Z"
+            fill="url(#gh2)" opacity="0"/>
+
+          <!-- t4 → fl4 HÉROE (200, 108) -->
+          <path class="tallo" id="t4"
+            d="M200,615 C200,540 200,460 200,380 C200,300 200,210 200,108"
+            stroke="url(#gt)" stroke-width="4.2" fill="none" stroke-linecap="round"
+            stroke-dasharray="507" stroke-dashoffset="507"/>
+          <path class="hoja" id="h4a"
+            d="M200,372 C216,358 234,352 238,367 C242,382 224,394 208,388Z"
+            fill="url(#gh1)" opacity="0"/>
+          <path class="hoja" id="h4b"
+            d="M200,472 C184,460 174,438 186,428 C198,418 214,432 210,452Z"
+            fill="url(#gh2)" opacity="0"/>
+
+          <!-- t5 → fl5 lirio der (252, 168) -->
+          <path class="tallo" id="t5"
+            d="M200,615 C204,558 220,484 232,404 C240,344 244,262 252,168"
+            stroke="url(#gt)" stroke-width="3.4" fill="none" stroke-linecap="round"
+            stroke-dasharray="450" stroke-dashoffset="450"/>
+          <path class="hoja" id="h5a"
+            d="M242,360 C228,346 212,340 208,354 C204,368 220,380 234,374Z"
+            fill="url(#gh1)" opacity="0"/>
+
+          <!-- t6 → fl6 orq der (312, 238) -->
+          <path class="tallo" id="t6"
+            d="M200,615 C214,562 244,494 272,418 C290,364 300,304 312,238"
+            stroke="url(#gt)" stroke-width="3.0" fill="none" stroke-linecap="round"
+            stroke-dasharray="410" stroke-dashoffset="410"/>
+          <path class="hoja" id="h6a"
+            d="M294,338 C306,322 312,300 300,288 C288,276 274,292 278,310Z"
+            fill="url(#gh2)" opacity="0"/>
+
+          <!-- t7 → fl7 ext der (364, 335) -->
+          <path class="tallo" id="t7"
+            d="M200,615 C225,575 272,508 310,440 C334,394 350,364 364,335"
+            stroke="url(#gt)" stroke-width="2.8" fill="none" stroke-linecap="round"
+            stroke-dasharray="370" stroke-dashoffset="370"/>
+          <path class="hoja" id="h7a"
+            d="M328,400 C344,388 356,368 344,354 C332,340 316,354 320,372Z"
+            fill="url(#gh1)" opacity="0"/>
+          <path class="hoja" id="h7b"
+            d="M284,460 C268,444 250,436 244,450 C238,464 254,476 270,470Z"
+            fill="url(#gh2)" opacity="0"/>
+
+          <!-- LAZO en (200, 615) -->
+          <g id="lazo" opacity="0">
+            <ellipse cx="200" cy="621" rx="20" ry="14" fill="url(#glazo)" filter="url(#fglow-xs)"/>
+            <path d="M180,621 C158,602 149,581 162,570 C172,562 182,575 180,593Z" fill="url(#glazo)" opacity="0.88"/>
+            <path d="M220,621 C242,602 251,581 238,570 C228,562 218,575 220,593Z" fill="url(#glazo)" opacity="0.88"/>
+            <path d="M193,633 C185,651 178,665 168,679" stroke="#CE93D8" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+            <path d="M207,633 C215,651 222,665 232,679" stroke="#AB47BC" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+          </g>
+        </g>
+
+        <!-- ══════════════════════════════════════════════
+             FLORES — translate() = fin exacto de su tallo
+        ══════════════════════════════════════════════ -->
+
+        <!-- fl1  ext izq  (36, 335) -->
+        <g class="flor" id="fl1">
+          <ellipse class="glow-halo" cx="36" cy="335" rx="55" ry="55" fill="url(#gg-oro)" opacity="0"/>
+          <g class="bloom-g" transform="translate(36,335)" opacity="0" filter="url(#fsombra)">
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl2)" transform="rotate(0)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl1)" transform="rotate(120)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl3)" transform="rotate(240)"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl3)" transform="rotate(60)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl1)" transform="rotate(180)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl2)" transform="rotate(300)" opacity="0.85"/>
+            <line x1="0" y1="4" x2="-13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="-13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(-20,-13,-51)"/>
+            <line x1="0" y1="4" x2="-6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="-6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="0" y2="-56" stroke="#81C784" stroke-width="1.2"/>
+            <ellipse cx="0" cy="-57" rx="3.2" ry="1.5" fill="#5D4037"/>
+            <line x1="0" y1="4" x2="6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(20,13,-51)"/>
+            <line x1="0" y1="3" x2="0" y2="-62" stroke="#66BB6A" stroke-width="1.5"/>
+            <circle cx="0" cy="-64" r="3.8" fill="#A5D6A7" filter="url(#fglow-xs)"/>
+            <circle cx="0" cy="0" r="8" fill="url(#gcl)" filter="url(#fglow-xs)"/>
+          </g>
+        </g>
+
+        <!-- fl2  orq izq  (88, 238) -->
+        <g class="flor" id="fl2">
+          <ellipse class="glow-halo" cx="88" cy="238" rx="62" ry="62" fill="url(#gg-purp)" opacity="0"/>
+          <g class="bloom-g" transform="translate(88,238)" opacity="0" filter="url(#fsombra)">
+            <path class="sep" d="M0,5 C-8,3 -13,-6 -14,-22 C-15,-38 -10,-52 -4,-60 C-2,-65 0,-68 0,-68 C2,-65 4,-60 10,-52 C15,-38 14,-22 13,-6 C8,3 0,5Z" fill="url(#go2)" transform="rotate(0)"/>
+            <path class="sep" d="M0,5 C-8,3 -13,-6 -14,-22 C-15,-38 -10,-52 -4,-60 C-2,-65 0,-68 0,-68 C2,-65 4,-60 10,-52 C15,-38 14,-22 13,-6 C8,3 0,5Z" fill="url(#go2)" transform="rotate(138)"/>
+            <path class="sep" d="M0,5 C-8,3 -13,-6 -14,-22 C-15,-38 -10,-52 -4,-60 C-2,-65 0,-68 0,-68 C2,-65 4,-60 10,-52 C15,-38 14,-22 13,-6 C8,3 0,5Z" fill="url(#go2)" transform="rotate(-138)"/>
+            <path class="pet-o" d="M0,7 C-12,5 -26,-2 -33,-17 C-38,-32 -33,-51 -20,-60 C-12,-66 -4,-63 0,-58 C4,-63 12,-66 20,-60 C33,-51 38,-32 33,-17 C26,-2 12,5 0,7Z" fill="url(#go1)" transform="rotate(78)" filter="url(#fglow-xs)"/>
+            <path class="pet-o" d="M0,7 C-12,5 -26,-2 -33,-17 C-38,-32 -33,-51 -20,-60 C-12,-66 -4,-63 0,-58 C4,-63 12,-66 20,-60 C33,-51 38,-32 33,-17 C26,-2 12,5 0,7Z" fill="url(#go1)" transform="rotate(-78)" filter="url(#fglow-xs)"/>
+            <path class="lab" d="M0,11 C-12,9 -25,3 -29,-8 C-34,-18 -30,-30 -21,-34 C-14,-38 -8,-32 0,-27 C8,-32 14,-38 21,-34 C30,-30 34,-18 29,-8 C25,3 12,9 0,11 C-5,17 -7,24 0,29 C7,24 5,17 0,11Z" fill="url(#glab1)" filter="url(#fglow-lg)"/>
+            <ellipse cx="0" cy="-5" rx="6" ry="7" fill="url(#gco)" filter="url(#fglow-xs)"/>
+            <ellipse cx="0" cy="-10" rx="2.5" ry="3" fill="rgba(255,235,60,0.92)"/>
+          </g>
+        </g>
+
+        <!-- fl3  lirio izq  (148, 168) -->
+        <g class="flor" id="fl3">
+          <ellipse class="glow-halo" cx="148" cy="168" rx="60" ry="60" fill="url(#gg-oro)" opacity="0"/>
+          <g class="bloom-g" transform="translate(148,168)" opacity="0" filter="url(#fsombra)">
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl3)" transform="rotate(0)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl1)" transform="rotate(120)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl2)" transform="rotate(240)"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl2)" transform="rotate(60)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl1)" transform="rotate(180)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl3)" transform="rotate(300)" opacity="0.85"/>
+            <line x1="0" y1="4" x2="-13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="-13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(-20,-13,-51)"/>
+            <line x1="0" y1="4" x2="-6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="-6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="0" y2="-56" stroke="#81C784" stroke-width="1.2"/>
+            <ellipse cx="0" cy="-57" rx="3.2" ry="1.5" fill="#5D4037"/>
+            <line x1="0" y1="4" x2="6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(20,13,-51)"/>
+            <line x1="0" y1="3" x2="0" y2="-62" stroke="#66BB6A" stroke-width="1.5"/>
+            <circle cx="0" cy="-64" r="3.8" fill="#A5D6A7" filter="url(#fglow-xs)"/>
+            <circle cx="0" cy="0" r="8" fill="url(#gcl)" filter="url(#fglow-xs)"/>
+          </g>
+        </g>
+
+        <!-- fl4  HÉROE  (200, 108) -->
+        <g class="flor" id="fl4">
+          <ellipse class="glow-halo" cx="200" cy="108" rx="80" ry="80" fill="url(#gg-oro)" opacity="0"/>
+          <g class="bloom-g" transform="translate(200,108)" opacity="0" filter="url(#fsombra)">
+            <path class="tep" d="M0,9 C-18,6 -30,-11 -31,-42 C-33,-70 -23,-104 -11,-125 C-5,-136 0,-143 0,-143 C5,-136 11,-125 23,-104 C33,-70 31,-42 30,-11 C18,6 0,9Z" fill="url(#gl1)" transform="rotate(0)"/>
+            <path class="tep" d="M0,9 C-18,6 -30,-11 -31,-42 C-33,-70 -23,-104 -11,-125 C-5,-136 0,-143 0,-143 C5,-136 11,-125 23,-104 C33,-70 31,-42 30,-11 C18,6 0,9Z" fill="url(#gl2)" transform="rotate(120)"/>
+            <path class="tep" d="M0,9 C-18,6 -30,-11 -31,-42 C-33,-70 -23,-104 -11,-125 C-5,-136 0,-143 0,-143 C5,-136 11,-125 23,-104 C33,-70 31,-42 30,-11 C18,6 0,9Z" fill="url(#gl3)" transform="rotate(240)"/>
+            <path class="tep" d="M0,9 C-15,6 -25,-9 -26,-38 C-28,-64 -19,-96 -9,-115 C-4,-125 0,-131 0,-131 C4,-125 9,-115 19,-96 C28,-64 26,-38 25,-9 C15,6 0,9Z" fill="url(#gl3)" transform="rotate(60)" opacity="0.85"/>
+            <path class="tep" d="M0,9 C-15,6 -25,-9 -26,-38 C-28,-64 -19,-96 -9,-115 C-4,-125 0,-131 0,-131 C4,-125 9,-115 19,-96 C28,-64 26,-38 25,-9 C15,6 0,9Z" fill="url(#gl1)" transform="rotate(180)" opacity="0.85"/>
+            <path class="tep" d="M0,9 C-15,6 -25,-9 -26,-38 C-28,-64 -19,-96 -9,-115 C-4,-125 0,-131 0,-131 C4,-125 9,-115 19,-96 C28,-64 26,-38 25,-9 C15,6 0,9Z" fill="url(#gl2)" transform="rotate(300)" opacity="0.85"/>
+            <line x1="0" y1="6" x2="-19" y2="-70" stroke="#81C784" stroke-width="1.5"/>
+            <ellipse cx="-19" cy="-71" rx="4.2" ry="1.9" fill="#6D4C41" transform="rotate(-22,-19,-71)"/>
+            <line x1="0" y1="6" x2="-9" y2="-74" stroke="#A5D6A7" stroke-width="1.5"/>
+            <ellipse cx="-9" cy="-75" rx="4.2" ry="1.9" fill="#795548"/>
+            <line x1="0" y1="6" x2="0" y2="-78" stroke="#81C784" stroke-width="1.6"/>
+            <ellipse cx="0" cy="-79" rx="4.2" ry="1.9" fill="#5D4037"/>
+            <line x1="0" y1="6" x2="9" y2="-74" stroke="#A5D6A7" stroke-width="1.5"/>
+            <ellipse cx="9" cy="-75" rx="4.2" ry="1.9" fill="#795548"/>
+            <line x1="0" y1="6" x2="19" y2="-70" stroke="#81C784" stroke-width="1.5"/>
+            <ellipse cx="19" cy="-71" rx="4.2" ry="1.9" fill="#6D4C41" transform="rotate(22,19,-71)"/>
+            <line x1="0" y1="5" x2="0" y2="-86" stroke="#66BB6A" stroke-width="2.1"/>
+            <circle cx="0" cy="-88" r="5.5" fill="#A5D6A7" filter="url(#fglow)"/>
+            <circle cx="0" cy="0" r="12" fill="url(#gcl)" filter="url(#fglow)"/>
+          </g>
+        </g>
+
+        <!-- fl5  lirio der  (252, 168) -->
+        <g class="flor" id="fl5">
+          <ellipse class="glow-halo" cx="252" cy="168" rx="60" ry="60" fill="url(#gg-oro)" opacity="0"/>
+          <g class="bloom-g" transform="translate(252,168)" opacity="0" filter="url(#fsombra)">
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl1)" transform="rotate(0)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl3)" transform="rotate(120)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl2)" transform="rotate(240)"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl2)" transform="rotate(60)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl1)" transform="rotate(180)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl3)" transform="rotate(300)" opacity="0.85"/>
+            <line x1="0" y1="4" x2="-13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="-13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(-20,-13,-51)"/>
+            <line x1="0" y1="4" x2="-6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="-6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="0" y2="-56" stroke="#81C784" stroke-width="1.2"/>
+            <ellipse cx="0" cy="-57" rx="3.2" ry="1.5" fill="#5D4037"/>
+            <line x1="0" y1="4" x2="6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(20,13,-51)"/>
+            <line x1="0" y1="3" x2="0" y2="-62" stroke="#66BB6A" stroke-width="1.5"/>
+            <circle cx="0" cy="-64" r="3.8" fill="#A5D6A7" filter="url(#fglow-xs)"/>
+            <circle cx="0" cy="0" r="8" fill="url(#gcl)" filter="url(#fglow-xs)"/>
+          </g>
+        </g>
+
+        <!-- fl6  orq der  (312, 238) -->
+        <g class="flor" id="fl6">
+          <ellipse class="glow-halo" cx="312" cy="238" rx="62" ry="62" fill="url(#gg-purp)" opacity="0"/>
+          <g class="bloom-g" transform="translate(312,238)" opacity="0" filter="url(#fsombra)">
+            <path class="sep" d="M0,5 C-8,3 -13,-6 -14,-22 C-15,-38 -10,-52 -4,-60 C-2,-65 0,-68 0,-68 C2,-65 4,-60 10,-52 C15,-38 14,-22 13,-6 C8,3 0,5Z" fill="url(#go2)" transform="rotate(0)"/>
+            <path class="sep" d="M0,5 C-8,3 -13,-6 -14,-22 C-15,-38 -10,-52 -4,-60 C-2,-65 0,-68 0,-68 C2,-65 4,-60 10,-52 C15,-38 14,-22 13,-6 C8,3 0,5Z" fill="url(#go2)" transform="rotate(138)"/>
+            <path class="sep" d="M0,5 C-8,3 -13,-6 -14,-22 C-15,-38 -10,-52 -4,-60 C-2,-65 0,-68 0,-68 C2,-65 4,-60 10,-52 C15,-38 14,-22 13,-6 C8,3 0,5Z" fill="url(#go2)" transform="rotate(-138)"/>
+            <path class="pet-o" d="M0,7 C-12,5 -26,-2 -33,-17 C-38,-32 -33,-51 -20,-60 C-12,-66 -4,-63 0,-58 C4,-63 12,-66 20,-60 C33,-51 38,-32 33,-17 C26,-2 12,5 0,7Z" fill="url(#go1)" transform="rotate(78)" filter="url(#fglow-xs)"/>
+            <path class="pet-o" d="M0,7 C-12,5 -26,-2 -33,-17 C-38,-32 -33,-51 -20,-60 C-12,-66 -4,-63 0,-58 C4,-63 12,-66 20,-60 C33,-51 38,-32 33,-17 C26,-2 12,5 0,7Z" fill="url(#go1)" transform="rotate(-78)" filter="url(#fglow-xs)"/>
+            <path class="lab" d="M0,11 C-12,9 -25,3 -29,-8 C-34,-18 -30,-30 -21,-34 C-14,-38 -8,-32 0,-27 C8,-32 14,-38 21,-34 C30,-30 34,-18 29,-8 C25,3 12,9 0,11 C-5,17 -7,24 0,29 C7,24 5,17 0,11Z" fill="url(#glab2)" filter="url(#fglow-lg)"/>
+            <ellipse cx="0" cy="-5" rx="6" ry="7" fill="url(#gco)" filter="url(#fglow-xs)"/>
+            <ellipse cx="0" cy="-10" rx="2.5" ry="3" fill="rgba(255,235,60,0.92)"/>
+          </g>
+        </g>
+
+        <!-- fl7  ext der  (364, 335) -->
+        <g class="flor" id="fl7">
+          <ellipse class="glow-halo" cx="364" cy="335" rx="55" ry="55" fill="url(#gg-oro)" opacity="0"/>
+          <g class="bloom-g" transform="translate(364,335)" opacity="0" filter="url(#fsombra)">
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl3)" transform="rotate(0)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl2)" transform="rotate(120)"/>
+            <path class="tep" d="M0,7 C-13,4 -22,-9 -23,-32 C-24,-54 -17,-78 -7,-94 C-3,-102 0,-108 0,-108 C3,-102 7,-94 17,-78 C24,-54 23,-32 22,-9 C13,4 0,7Z" fill="url(#gl1)" transform="rotate(240)"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl1)" transform="rotate(60)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl2)" transform="rotate(180)" opacity="0.85"/>
+            <path class="tep" d="M0,7 C-10,4 -18,-7 -19,-27 C-20,-48 -13,-70 -5,-84 C-2,-92 0,-97 0,-97 C2,-92 5,-84 13,-70 C20,-48 19,-27 18,-7 C10,4 0,7Z" fill="url(#gl3)" transform="rotate(300)" opacity="0.85"/>
+            <line x1="0" y1="4" x2="-13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="-13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(-20,-13,-51)"/>
+            <line x1="0" y1="4" x2="-6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="-6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="0" y2="-56" stroke="#81C784" stroke-width="1.2"/>
+            <ellipse cx="0" cy="-57" rx="3.2" ry="1.5" fill="#5D4037"/>
+            <line x1="0" y1="4" x2="6" y2="-53" stroke="#A5D6A7" stroke-width="1.1"/>
+            <ellipse cx="6" cy="-54" rx="3.2" ry="1.5" fill="#795548"/>
+            <line x1="0" y1="4" x2="13" y2="-50" stroke="#81C784" stroke-width="1.1"/>
+            <ellipse cx="13" cy="-51" rx="3.2" ry="1.5" fill="#6D4C41" transform="rotate(20,13,-51)"/>
+            <line x1="0" y1="3" x2="0" y2="-62" stroke="#66BB6A" stroke-width="1.5"/>
+            <circle cx="0" cy="-64" r="3.8" fill="#A5D6A7" filter="url(#fglow-xs)"/>
+            <circle cx="0" cy="0" r="8" fill="url(#gcl)" filter="url(#fglow-xs)"/>
+          </g>
+        </g>
+
+      </svg>
+    </section>
+
+    <!-- MENSAJE -->
+    <section id="mensaje">
+      <div class="msg-inner">
+        <div class="linea-deco"></div>
+        <p class="v v1">En tu ser encuentro refugio,</p>
+        <p class="v v2">tu amor, sempiterna serenidad,</p>
+        <p class="v v3">una ataraxia de deseos cumplidos,</p>
+        <div class="v-sep"></div>
+        <p class="v v4 vd">un romance inmarcesible en la eternidad.</p>
+        <div class="linea-deco bot"></div>
+        <p class="v vsig">Con amor · 21 de Marzo · 2026</p>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>
